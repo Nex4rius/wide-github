@@ -4,57 +4,47 @@ var fs = require('fs');
 
 var manifest = JSON.parse(fs.readFileSync('manifest.json'));
 
-var header = "" +
-"\"use strict\";\n" +
-"\n" +
-"// ==UserScript==\n" +
-"// @name        " + manifest["name"] + "\n" +
-"// @namespace   https://github.com/xthexder/wide-github\n" +
-"// @description " + manifest["description"] + "\n" +
-"// @author      xthexder\n" +
-"// @copyright   2013+, xthexder (https://github.com/xthexder)\n" +
-"// @contributor Jason Frey (https://github.com/Fryguy)\n" +
-"// @contributor Marti Martz (https://github.com/Martii)\n" +
-"// @contributor Paul \"Joey\" Clark (https://github.com/joeytwiddle)\n" +
-"// @contributor Robert Laverty (https://github.com/roblav96)\n" +
-"// @contributor Amir Meimari (https://github.com/amirmeimari)\n" +
-"// @license     MIT; https://raw.githubusercontent.com/xthexder/wide-github/master/LICENSE\n" +
-"// @version     " + manifest["version"] + "\n" +
-"// @icon        https://raw.githubusercontent.com/xthexder/wide-github/master/icon.png\n" +
-"// @homepageURL https://github.com/xthexder/wide-github\n" +
-"// @supportURL  https://github.com/xthexder/wide-github/issues\n" +
-"// @include     *github.com*\n" +
-"// @grant       none\n" +
-"// ==/UserScript==\n" +
-"\n" +
-"var styleSheet = \"\" +\n" +
-"";
+var header = `
+"use strict";
 
-var footer = "" +
-"\"\";\n" +
-"\n" +
-"(function () {\n" +
-"  var s = document.createElement('style');\n" +
-"  s.type = \"text/css\";\n" +
-"  s.innerHTML = styleSheet;\n" +
-"  (document.head || document.documentElement).appendChild(s);\n" +
-"})();\n" +
-"";
+// ==UserScript==
+// @name        ` + manifest["name"] + `
+// @namespace   https://github.com/xthexder/wide-github
+// @description ` + manifest["description"] + `
+// @author      xthexder
+// @copyright   2013+, xthexder (https://github.com/xthexder)
+// @contributor Jason Frey (https://github.com/Fryguy)
+// @contributor Marti Martz (https://github.com/Martii)
+// @contributor Paul "Joey" Clark (https://github.com/joeytwiddle)
+// @contributor Robert Laverty (https://github.com/roblav96)
+// @contributor Amir Meimari (https://github.com/amirmeimari)
+// @contributor Nex4rius (https://github.com/nex4rius)
+// @license     MIT; https://raw.githubusercontent.com/xthexder/wide-github/master/LICENSE
+// @version     ` + manifest["version"] + `
+// @icon        https://raw.githubusercontent.com/xthexder/wide-github/master/icon.png
+// @homepageURL https://github.com/xthexder/wide-github
+// @supportURL  https://github.com/xthexder/wide-github/issues
+// @include     *github.com*
+// @grant       none
+// ==/UserScript==
+
+var styleSheet = ` + "`;";
+
+var footer = "`;" + `
+
+(function () {
+  var s = document.createElement('style');
+  s.type = "text/css";
+  s.innerHTML = styleSheet;
+  (document.head || document.documentElement).appendChild(s);
+})();
+`;
 
 var styleSheet = fs.readFileSync('wide-github.css');
 var lines = styleSheet.toString().split("\n");
 
 var output = header;
-for (var i = 0; i < lines.length; i++) {
-	lines[i] = lines[i].trimRight();
-	if (lines[i] !== "") {
-		lines[i] = lines[i].replace(/^( *)([^\/])/, "$1\"$2");
-		if (!lines[i].match(/^ *\/\*/)) lines[i] = lines[i].replace(/( *\/\*[^\*]*\*\/)?$/, "\" +$1");
-		lines[i] = lines[i].replace(/\/\*(.*)\*\/$/, "//$1").replace(/ +$/, "");
-		output += lines[i];
-	}
-	output += "\n";
-}
+output += styleSheet;
 output += footer;
 
 fs.writeFileSync("build/wide-github.user.js", output);
